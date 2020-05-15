@@ -1,33 +1,76 @@
 <template>
     <div class="numberPad">
-        <div class="output">100</div>
+        <div class="output">{{output}}</div>
         <div class="buttons">
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>删除</button>
-            <button>4</button>
-            <button>5</button>
-            <button>6</button>
-            <button>清空</button>
-            <button>7</button>
-            <button>8</button>
-            <button>9</button>
-            <button class="ok">ok</button>
-            <button class="zero">0</button>
-            <button>.</button>
+            <button @click="storeOutput">1</button>
+            <button @click="storeOutput">2</button>
+            <button @click="storeOutput">3</button>
+            <button @click="deleteOutput">删除</button>
+            <button @click="storeOutput">4</button>
+            <button @click="storeOutput">5</button>
+            <button @click="storeOutput">6</button>
+            <button @click="clear">清空</button>
+            <button @click="storeOutput">7</button>
+            <button @click="storeOutput">8</button>
+            <button @click="storeOutput">9</button>
+            <button class="ok" @click="ok">ok</button>
+            <button class="zero" @click="storeOutput">0</button>
+            <button @click="storeOutput">.</button>
         </div>
     </div>
 </template>
 
 <script lang='ts'>
-    export default {
-        name: 'numberPads'
-    };
+    import Vue from 'vue';
+    import {Component} from 'vue-property-decorator';
+
+    @Component
+    export default class extends Vue {
+        output = '0';
+
+        storeOutput(event: MouseEvent) {
+            const button = event.target as HTMLButtonElement;
+            const input = button.textContent as string;
+            //第一步初始值为零
+            if (this.output.length >= 16) {
+                return;//最多十六位
+            }
+
+            if (this.output === '0') {
+                if (input === '0') {
+                    return;
+                } else if ('123456789'.indexOf(input) >= 0) {
+                    this.output = input;
+
+                }
+                if (input === '.') {
+                    this.output += input;
+                }
+            } else if (this.output.indexOf('.') >= 0 && input === '.') {
+
+                return;
+            } else {
+                this.output += input;
+            }
+
+
+        }
+
+        clear() {
+            this.output = '';
+        }
+        deleteOutput(){
+            this.output=this.output.slice(0,-1)
+        }
+        ok(){
+            console.log(`点击了ok按钮，还需要完善`);
+        }
+    }
 </script>
 
 <style lang='scss' scoped>
     @import "~@/assets/_var.scss";
+
     .numberPad {
         .output {
             font-size: 36px;
@@ -36,6 +79,8 @@
             text-align: right;
             box-shadow: inset 0 -5px 5px -5px fade_out(black, 0.3),
             inset 0 5px 5px -5px fade_out(black, 0.3);
+
+            height: 72px;
 
         }
 
