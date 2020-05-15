@@ -4,7 +4,7 @@
         <number-pads></number-pads>
         <types></types>
         <notes></notes>
-        <tags></tags>
+        <tags :tags.sync="dataSource"></tags>
 
     </Layout>
 
@@ -21,6 +21,12 @@
   export default {
     name: "Money",
     components: {Tags, Notes, Types, NumberPads},
+    data() {
+      return {
+        dataSource:
+          ['衣', '食', '住', '行']
+      }
+    }
   }
 </script>
 
