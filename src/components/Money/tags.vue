@@ -5,21 +5,24 @@
             <li v-for="item in tags"
                 :key="item"
                 @click="activeClass(item)"
-                :class="{selected:selectedTags.indexOf(item)>=0}">{{item}}
+                :class="{selected:selectedTags.indexOf(item)>=0}"
+             >{{item}}
             </li>
 
         </ul>
         <div class="new">
-            <button @click="createTag">新增标签</button>
+            <button @click.native="createTag" >新增标签</button>
         </div>
     </div>
 </template>
 
 <script lang='ts'>
     import Vue from 'vue';
-    import {Component, Prop, Watch} from 'vue-property-decorator';
-
-    @Component
+    import {Component, Prop} from 'vue-property-decorator';
+    import Button from '@/components/Button.vue';
+    @Component({
+        components: {Button}
+    })
     export default class extends Vue {
         @Prop() readonly    tags: string[] | undefined;
         selectedTags: string[] = [];
@@ -51,6 +54,7 @@
 
             }
         }
+
 
 
 
