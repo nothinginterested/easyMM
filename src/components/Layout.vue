@@ -12,11 +12,7 @@
 <script lang='ts'>
     export default {
         name: 'Layout',
-        props:{
-            classPrefix:{
-
-            }
-        }
+        props: ['classPrefix']
     };
 </script>
 

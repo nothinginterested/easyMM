@@ -1,7 +1,10 @@
 <template>
 
     <Layout>
-        Lable
+
+
+
+
     </Layout>
 </template>
 

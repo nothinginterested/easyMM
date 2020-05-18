@@ -1,33 +1,71 @@
 <template>
     <Layout class-prefix="xxx">
 
-        <number-pads></number-pads>
-        <types></types>
-        <notes></notes>
-        <tags :tags.sync="dataSource"></tags>
+        <number-pads :amount.sync="record.amount" @submit="saveRecord"></number-pads>
+        <types :select.sync="record.type"></types>
+        <notes @update:value="onUpdateNotes"></notes>
+        <tags :tags.sync="dataSource" @update:value="onUpdateTags"></tags>
+        {{record}}
+        {{RecordList}}
 
     </Layout>
 
 
 </template>
 
-<script>
+<script lang="ts">
+    import Vue from 'vue';
 
-  import NumberPads from "@/components/Money/numberPads";
-  import Types from "@/components/Money/types";
-  import Notes from "@/components/Money/notes";
-  import Tags from "@/components/Money/tags";
+    import NumberPads from '@/components/Money/numberPads.vue';
+    import Types from '@/components/Money/types.vue';
+    import Notes from '@/components/Money/notes.vue';
+    import Tags from '@/components/Money/tags.vue';
+    import {Component, Watch} from 'vue-property-decorator';
+    import {model} from '@/model';
 
-  export default {
-    name: "Money",
-    components: {Tags, Notes, Types, NumberPads},
-    data() {
-      return {
-        dataSource:
-          ['衣', '食', '住', '行']
-      }
+
+    const RecordList = model.fetch();
+
+
+    @Component({
+        components: {
+            Types, Notes, Tags, NumberPads
+        }
+    })
+    export default class extends Vue {
+        dataSource: string[] = ['衣', '食', '住', '行'];
+        RecordList: RecordItem[] = RecordList;
+
+
+        record: RecordItem = {
+            notes: '',
+            tags: [],
+            type: '-',
+            amount: 0
+        };
+
+        onUpdateNotes(value: string) {
+            this.record.notes = value;
+        }
+
+        onUpdateTags(value: string[]) {
+            this.record.tags = value;
+        }
+
+        saveRecord() {
+            const record2: RecordItem = model.clone(this.record);
+            this.RecordList.push(record2);
+
+        }
+
+        @Watch('RecordList')
+        onRecordListChanged() {
+
+            model.save(this.RecordList);
+        }
+
     }
-  }
+
 </script>
 
 <style lang="scss">

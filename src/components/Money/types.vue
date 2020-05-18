@@ -13,11 +13,12 @@
 
     @Component
     export default class extends Vue {
-        select = '-';//'-'表示支出 '+'表示收入
-        @Prop(Number) xxx: number | undefined;
+        @Prop(String) select: string | undefined;
+
+        // select = ;//'-'表示支出 '+'表示收入
 
         selectType(type: string) {
-            this.select = type;
+            this.$emit('update:select', type);
         }
 
     }

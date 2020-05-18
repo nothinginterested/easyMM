@@ -22,11 +22,12 @@
 
 <script lang='ts'>
     import Vue from 'vue';
-    import {Component} from 'vue-property-decorator';
+    import {Component, Prop} from 'vue-property-decorator';
 
     @Component
     export default class extends Vue {
-        output = '0';
+        @Prop(Number) amount!: number;
+        output = this.amount.toString();
 
         storeOutput(event: MouseEvent) {
             const button = event.target as HTMLButtonElement;
@@ -59,11 +60,14 @@
         clear() {
             this.output = '';
         }
-        deleteOutput(){
-            this.output=this.output.slice(0,-1)
+
+        deleteOutput() {
+            this.output = this.output.slice(0, -1);
         }
-        ok(){
-            console.log(`点击了ok按钮，还需要完善`);
+
+        ok() {
+            this.$emit('update:amount',  parseFloat(this.output));
+            this.$emit('submit');
         }
     }
 </script>

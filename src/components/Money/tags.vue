@@ -17,11 +17,11 @@
 
 <script lang='ts'>
     import Vue from 'vue';
-    import {Component, Prop} from 'vue-property-decorator';
+    import {Component, Prop, Watch} from 'vue-property-decorator';
 
     @Component
     export default class extends Vue {
-        @Prop() readonly tags: string[] | undefined;
+        @Prop() readonly    tags: string[] | undefined;
         selectedTags: string[] = [];
 
         mounted() {
@@ -36,6 +36,7 @@
                 console.log(this.selectedTags);
             } else {
                 this.selectedTags.push(tag);
+                this.$emit('update:value',this.selectedTags)
 
             }
 
@@ -50,6 +51,8 @@
 
             }
         }
+
+
 
     }
 
