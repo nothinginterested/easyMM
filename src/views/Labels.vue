@@ -3,7 +3,8 @@
     <Layout>
         <div class="tags">
             <router-link v-for="tag in tags" :key="tag.id" :to="`/labels/edit/${tag.id}`"
-            class="tag">{{tag.name}}</router-link>
+                         class="tag">{{tag.name}}
+            </router-link>
 
 
         </div>
@@ -18,20 +19,25 @@
 <script lang='ts'>
     import Vue from 'vue';
     import {Component} from 'vue-property-decorator';
-    import {tagsListModel} from '@/model/tagsListModel';
+    import {TagHelper} from '@/mixins/TagHelper';
 
-    tagsListModel.fetch();
     @Component
-    export default class Labels extends Vue {
-        tags = tagsListModel.data;
+    export default class Labels extends TagHelper {
+
+        get tags() {
+            return this.$store.state.TagList;
+        }
+
+        created() {
+            this.$store.commit('fetchTags');
+        }
 
         createTag() {
-            const name = window.prompt('请输入标签名') as string;
-            if (name) {
-                const message=tagsListModel.create(name);
-                if(message==='duplicated'){
-                    window.alert('请勿输入重复的标签')
-                }
+            const name = window.prompt('请输入标签名字');
+            if (!name) {
+                return window.alert('标签名不能为空');
+            } else {
+                this.$store.commit('createTag', name);
             }
         }
 

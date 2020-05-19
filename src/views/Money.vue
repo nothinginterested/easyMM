@@ -4,7 +4,7 @@
         <number-pads :amount.sync="record.amount" @submit="saveRecord"></number-pads>
         <types :select.sync="record.type"></types>
         <form-item @update:value="onUpdateNotes" field-name="备注1" place-holder="在这里输入备注"></form-item>
-        <tags :tags.sync="dataSource" @update:value="onUpdateTags"></tags>
+        <tags  @update:value="onUpdateTags"></tags>
         {{record}}
         {{RecordList}}
 
@@ -20,26 +20,25 @@
     import Types from '@/components/Money/types.vue';
     import FormItem from '@/components/Money/FormItem.vue';
     import Tags from '@/components/Money/tags.vue';
-    import {Component, Watch} from 'vue-property-decorator';
-    import {model} from '@/model/recordListmodel';
-
-
-    const RecordList = model.fetch();
+    import {Component} from 'vue-property-decorator';
 
 
     @Component({
         components: {
-            Types,  FormItem, Tags, NumberPads
+            Types, FormItem, Tags, NumberPads
         }
     })
     export default class extends Vue {
         dataSource: string[] = ['衣', '食', '住', '行'];
-        get RecordList(){
-            return this.$store.state.RecordList
+
+
+
+        get RecordList() {
+            return this.$store.state.RecordList;
         }
 
-        created(){
-            this.$store.commit('fetchRecords')
+        created() {
+            this.$store.commit('fetchRecords');
         }
 
 
@@ -59,10 +58,9 @@
         }
 
         saveRecord() {
-            this.$store.commit('createRecord',this.record)
+            this.$store.commit('createRecord', this.record);
 
         }
-
 
 
     }

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {model} from '@/model/recordListmodel';
+import createId from '@/lib/idCreator';
 
 
 Vue.use(Vuex);
@@ -24,8 +25,26 @@ const store = new Vuex.Store({
             store.commit('saveRecord');
 
         },
-        saveRecord(state){
+        saveRecord(state) {
             window.localStorage.setItem('recordList', JSON.stringify(state.RecordList));
+        },
+        fetchTags(state) {
+            state.TagList = JSON.parse(window.localStorage.getItem('tagList') || '[]');
+
+        },
+        createTag(state, name: string) {
+            const names = state.TagList.map(item => item.name);
+            if (names.indexOf(name) >= 0) {
+                window.alert('标签名重复了');
+            }else {
+                const id = createId();
+                state.TagList.push({id: id, name: name});
+                store.commit('saveTag');
+            }
+
+        },
+        saveTag(state) {
+            window.localStorage.setItem('tagList', JSON.stringify(state.TagList));
         }
 
     },

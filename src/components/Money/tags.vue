@@ -3,32 +3,37 @@
     <div class="tags">
         <ul class="current">
             <li v-for="item in tags"
-                :key="item"
+                :key="item.id"
                 @click="activeClass(item)"
                 :class="{selected:selectedTags.indexOf(item)>=0}"
-             >{{item}}
+            >{{item.name}}
             </li>
 
         </ul>
         <div class="new">
-            <button @click="createTag" >新增标签</button>
+            <button @click="createTag">新增标签</button>
         </div>
     </div>
 </template>
 
 <script lang='ts'>
     import Vue from 'vue';
-    import {Component, Prop} from 'vue-property-decorator';
+    import {Component} from 'vue-property-decorator';
     import Button from '@/components/Button.vue';
+    import {TagHelper} from '@/mixins/TagHelper';
+
     @Component({
         components: {Button}
     })
-    export default class extends Vue {
-        @Prop() readonly    tags: string[] | undefined;
+    export default class extends TagHelper {
         selectedTags: string[] = [];
 
-        mounted() {
-            console.log(this.tags);
+        get tags() {
+            return this.$store.state.TagList;
+        }
+
+        created() {
+            this.$store.commit('fetchTags');
         }
 
         activeClass(tag: string) {
@@ -39,20 +44,10 @@
                 console.log(this.selectedTags);
             } else {
                 this.selectedTags.push(tag);
-                this.$emit('update:value',this.selectedTags)
+                this.$emit('update:value', this.selectedTags);
 
             }
 
-        }
-
-        createTag() {
-            const name = window.prompt('请输入标签名字');
-            if (name === '') {
-                window.alert('标签名字不能为空哦');
-            } else if (this.tags) {
-                this.$emit('update:tags', [...this.tags, name]);
-
-            }
         }
 
 
