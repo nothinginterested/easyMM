@@ -11,7 +11,7 @@
 
         </ul>
         <div class="new">
-            <button @click.native="createTag" >新增标签</button>
+            <button @click="createTag" >新增标签</button>
         </div>
     </div>
 </template>

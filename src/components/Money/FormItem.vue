@@ -2,7 +2,7 @@
     <div>
         <label class="notes">
             <span class="name">{{this.fieldName}}</span>
-            <input type="text" :placeholder="placeHolder" v-model="content"
+            <input type="text" :placeholder="placeHolder" @input="onValueChanged($event.target.value)"
             >
         </label>
     </div>
@@ -14,10 +14,10 @@
 
     @Component
     export default class extends Vue {
-
+        @Prop({default: ''}) value!: string;
         @Prop() fieldName!: string;
         @Prop() placeHolder?: string;
-        content = '';
+        content = this.value;
 
         @Watch('content')
         onValueChanged(value: string) {

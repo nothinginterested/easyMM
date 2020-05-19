@@ -34,7 +34,13 @@
     })
     export default class extends Vue {
         dataSource: string[] = ['衣', '食', '住', '行'];
-        RecordList: RecordItem[] = RecordList;
+        get RecordList(){
+            return this.$store.state.RecordList
+        }
+
+        created(){
+            this.$store.commit('fetchRecords')
+        }
 
 
         record: RecordItem = {
@@ -53,16 +59,11 @@
         }
 
         saveRecord() {
-            const record2: RecordItem = model.clone(this.record);
-            this.RecordList.push(record2);
+            this.$store.commit('createRecord',this.record)
 
         }
 
-        @Watch('RecordList')
-        onRecordListChanged() {
 
-            model.save(this.RecordList);
-        }
 
     }
 
