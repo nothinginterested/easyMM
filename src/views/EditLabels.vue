@@ -8,7 +8,7 @@
         </div>
         <div class="form-wrapper">
             <FormItem :value="tag" field-name="标签名" :place-holder="tag.name"
-                      @update:value="updateTag"/>
+                      @update:value="update"/>
         </div>
         <div class="button-wrapper">
             <Button @click="removeTag">删除标签</Button>
@@ -22,36 +22,33 @@
     import {Component} from 'vue-property-decorator';
     import FormItem from '@/components/Money/FormItem.vue';
     import Button from '@/components/Button.vue';
-    import {tagsListModel} from '@/model/tagsListModel';
 
     @Component({
         components: {Button, FormItem: FormItem}
     })
 
     export default class EditLabels extends Vue {
-        tag?: { id: string; name: string } = undefined;
+        tag?: { id: number; name: string } = undefined;
 
         created() {
             const id = this.$route.params.id;
-            tagsListModel.fetch();
-            const tags = tagsListModel.data;
-            const tag = tags.filter(t => t.id === id)[0];
-            if (tag) {
-                this.tag = tag;
-            }
+            this.$store.commit('fetchTags');
+            this.$store.commit('setCurrentTag', parseFloat(id));
+            this.tag = this.$store.state.currentTag;
+            console.log(this.tag);
+
         }
 
-        updateTag(name: string) {
+        update(name: string) {
             if (this.tag) {
-                tagsListModel.update(this.tag.id, name);
-
+                this.$store.commit('updateTag', {id: this.tag.id, name});
             }
+
         }
 
         removeTag() {
             if (this.tag) {
-                tagsListModel.remove(this.tag.id);
-                this.$router.back()
+                this.$store.commit('removeTag',this.tag.id)
             }
         }
 
