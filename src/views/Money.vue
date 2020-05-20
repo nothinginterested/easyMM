@@ -46,7 +46,7 @@
             notes: '',
             tags: [],
             type: '-',
-            amount: 0
+            amount: 0,
         };
 
         onUpdateNotes(value: string) {

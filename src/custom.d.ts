@@ -3,6 +3,7 @@ type RecordItem = {
     tags: string[];
     type: string;
     amount: number;
+    date?: Date;
 
 
 };

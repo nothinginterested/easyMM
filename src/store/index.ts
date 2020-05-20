@@ -23,6 +23,7 @@ const store = new Vuex.Store({
         },
         createRecord(state, record: RecordItem) {
             const record2: RecordItem = model.clone(record);
+            record2.date = new Date();
             state.RecordList.push(record2);
 
             store.commit('saveRecord');
@@ -74,10 +75,10 @@ const store = new Vuex.Store({
                     break;
                 }
             }
-            if(index>=0){
-                state.TagList.splice(index,1)
-                store.commit('saveTag')
-                router.back()
+            if (index >= 0) {
+                state.TagList.splice(index, 1);
+                store.commit('saveTag');
+                router.back();
             }
 
 
