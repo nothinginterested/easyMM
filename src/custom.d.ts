@@ -1,9 +1,9 @@
 type RecordItem = {
     notes: string;
-    tags: string[];
+    tags: Tag[];
     type: string;
     amount: number;
-    date?: Date;
+    date?: string;
 
 
 };
@@ -11,3 +11,13 @@ type Tag = {
     id: number;
     name: string;
 }
+type RootState = {
+    RecordList: RecordItem[];
+    TagList: Tag[];
+    currentTag?: Tag;
+}
+
+type Result = {
+    title: string;
+    item: RecordItem[];
+}[]
