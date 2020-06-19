@@ -1,5 +1,5 @@
 <template>
-    <Layout class-prefix="xxx" @handleDate="changeMonthToggle" @handleTypes="changeTypesToggle" :Month="Month">
+    <Layout class-prefix="xxx" @handleDate="changeMonthToggle" @handleTypes="changeTypesToggle" :Month="Month" style="background: #EDEDED">
 
         <div class="Record" @click="open">
 
@@ -15,21 +15,40 @@
                :data-income="dataIncome"
 
         ></Types>
-        {{RecordListDay[0].item}}
-        <br>
-        <br>
-        {{RecordListDay[1]}}
-        <ul>
-            <li v-for="(group,index) in RecordListDay" :key="index">
-                <header>
+        <ul style="flex-grow: 1;padding: 8px;overflow: auto">
+            <li v-for="(group,index) in RecordListDay" :key="index" class="day-wrapper" >
+                <header class="headerDay">
                     <section>
                         <span> {{group.title }}</span>
                         <span>  {{WeekList[ group.day]}}</span>
                     </section>
-                    <section>
-
+                    <section class="income-expense-wrapper">
+                        <span class="expense">支</span>
+                        <span>
+                        {{group.expense}}
+                    </span>
+                        <span class="income">收</span>
+                        <span>{{group.income}}</span>
                     </section>
                 </header>
+                <ul>
+                    <li v-for="(item,index) in group.item" :key="index" class="item-wrapper">
+                        <span>
+                                                    <Icon icon=""></Icon>
+                        </span>
+                        <div class="record-content">
+                            <div>{{item.tags[0].name}}</div>
+                            <div class="record-content-details">
+                                <span>{{getTime(item)}}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            {{item.type==='+'?'+'+item.amount:'-'+item.amount}}
+
+                        </div>
+                    </li>
+                </ul>
 
 
             </li>
@@ -165,6 +184,9 @@
             this.TypesToggle = true;
         }
 
+        getTime(value: RecordItem) {
+            return dayjs(value.date).format('HH:MM');
+        }
 
         record: RecordItem = {
             notes: '',
@@ -219,7 +241,6 @@
         box-shadow: 0 2px 24px -6px #606266;
 
         > .icon {
-            border: 1px solid red;
             position: relative;
             width: 30px;
             height: 30px;
@@ -231,7 +252,6 @@
     }
 
     .Wrapper {
-        border: 1px solid red;
         background-color: #FAFAFA;
 
         & > .single {
@@ -259,7 +279,6 @@
     }
 
     .expenseWrapper {
-        border: 1px solid red;
         display: flex;
         align-items: center;
         flex-wrap: wrap;
@@ -288,6 +307,75 @@
         border: 4px solid #FAFAFA;
         border-radius: 6px;
 
+    }
+
+    .day-wrapper {
+        border-radius: 8px;
+        background: white;
+        color: #303133;
+        margin-bottom: 8px;
+        overflow: hidden;
+
+        & > .headerDay {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 18px;
+            background: #FBFBFB;
+
+            & > .income-expense-wrapper {
+                display: flex;
+                align-items: center;
+                color: #606266;
+
+                & > .income {
+                    margin-left: 16px;
+                    width: 1.5em;
+                    height: 1.5em;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #F4F4F4;
+                    border-radius: 4px;
+                }
+
+                & > .expense {
+                    width: 1.5em;
+                    height: 1.5em;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #F4F4F4;
+                    border-radius: 4px;
+
+                }
+            }
+        }
+    }
+
+    .item-wrapper {
+        padding: 24px 18px;
+        color: #606266;
+        text-decoration: none;
+        display: flex;
+
+        & > span:first-of-type {
+            padding: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #40B475;
+            border-radius: 50%;
+        }
+
+        & > .record-content {
+            flex-grow: 1;
+            padding: 0 16px;
+
+            & > .record-content-details {
+                color: #C0C4CC;
+            }
+        }
     }
 
 </style>

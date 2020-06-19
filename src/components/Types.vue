@@ -56,7 +56,6 @@
 
 <style lang='scss' scoped>
     .Wrapper {
-        border: 1px solid red;
         background-color: #FAFAFA;
 
         & > .single {

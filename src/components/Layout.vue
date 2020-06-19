@@ -90,7 +90,6 @@
 
         & > .Wrapper {
             background: #40B475;
-            border: 1px solid red;
             display: inline-block;
             padding: 0 14px;
             color: #edf5ed;
@@ -118,7 +117,6 @@
 
                 }
 
-                border: 1px solid red;
 
             }
         }
