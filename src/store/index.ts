@@ -18,12 +18,17 @@ const store = new Vuex.Store({
     mutations: {
         fetchRecords(state) {
             state.RecordList = JSON.parse(window.localStorage.getItem('recordList') || '[]') as RecordItem[];
+            state.RecordList.forEach(item => {
+                item.id = dayjs(item.date).valueOf();
+            });
 
         },
         createRecord(state, record: RecordItem) {
             console.log(record);
             const record2: RecordItem = model.clone(record);
-            record2.date =new Date().toISOString();
+
+            record2.date = new Date().toISOString();
+            record2.id = dayjs(record2.date).valueOf();
             state.RecordList.push(record2);
 
             store.commit('saveRecord');
