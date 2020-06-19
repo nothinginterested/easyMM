@@ -18,9 +18,7 @@ const store = new Vuex.Store({
     mutations: {
         fetchRecords(state) {
             state.RecordList = JSON.parse(window.localStorage.getItem('recordList') || '[]') as RecordItem[];
-            state.RecordList.forEach(item => {
-                item.id = dayjs(item.date).valueOf();
-            });
+
 
         },
         createRecord(state, record: RecordItem) {

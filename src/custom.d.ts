@@ -5,7 +5,7 @@ type RecordItem = {
     amount: number;
     date?: string;
     amountToString?: string;
-    id?: number;
+    id: number;
 
 
 };

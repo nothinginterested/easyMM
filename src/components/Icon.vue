@@ -1,21 +1,22 @@
 <template>
-    <svg class="icon " aria-hidden="true" :class="`${color}-wrapper`">
+    <svg class="icon " aria-hidden="true" :class="`${color}-wrapper`" @click="test">
         <use :xlink:href="`#icon-${icon}`"></use>
     </svg>
 </template>
 
 <script lang='ts'>
-    export default {
-        name: 'Icon',
-        props: {
-            icon: {
-                type: String
-            },
-            color: {
-                type: String
-            }
+    import Vue from 'vue';
+    import {Component, Prop} from 'vue-property-decorator';
+
+    @Component
+    export default class extends Vue {
+        @Prop() icon?: string;
+        @Prop() color?: string;
+        test(){
+            this.$emit('click')
         }
-    };
+
+    }
 </script>
 
 <style lang='scss' scoped>

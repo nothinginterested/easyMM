@@ -1,5 +1,6 @@
 <template>
-    <Layout class-prefix="xxx" @handleDate="changeMonthToggle" @handleTypes="changeTypesToggle" :Month="Month" style="background: #EDEDED">
+    <Layout class-prefix="xxx" @handleDate="changeMonthToggle" @handleTypes="changeTypesToggle" :Month="Month"
+            style="background: #EDEDED">
 
         <div class="Record" @click="open">
 
@@ -16,7 +17,7 @@
 
         ></Types>
         <ul style="flex-grow: 1;padding: 8px;overflow: auto">
-            <li v-for="(group,index) in RecordListDay" :key="index" class="day-wrapper" >
+            <li v-for="(group,index) in RecordListDay" :key="index" class="day-wrapper">
                 <header class="headerDay">
                     <section>
                         <span> {{group.title }}</span>
@@ -32,7 +33,8 @@
                     </section>
                 </header>
                 <ul>
-                    <li v-for="(item,index) in group.item" :key="index" class="item-wrapper">
+                    <router-link v-for="(item,index) in group.item" :key="index" class="item-wrapper"
+                                 :to="`/user/${item.id}`">
                         <span>
                                                     <Icon icon=""></Icon>
                         </span>
@@ -47,7 +49,7 @@
                             {{item.type==='+'?'+'+item.amount:'-'+item.amount}}
 
                         </div>
-                    </li>
+                    </router-link>
                 </ul>
 
 

@@ -1,5 +1,5 @@
 <template>
-    <div id="app" :style="`max-width:550px;height:${height}+'px'`">
+    <div id="app" :style="`max-width:550px;height:${height}+'px'`" style="background: #EDEDED">
 
         <router-view/>
     </div>
