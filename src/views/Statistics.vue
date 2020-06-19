@@ -3,18 +3,17 @@
 
         <Tabs :data-source="dataSource" :select.sync="type" class-prefix="type"></Tabs>
         <ol>
-            <li v-for="(group,index) in GroupList" :key="index">
-                <h3 class="title">{{group.title}}</h3>
+            <li v-for="(group,index) in GroupList" :key="index" >
+                <h3 class="title">{{group.title}}<span>{{group.total}}</span></h3>
                 <ol>
                     <li v-for="item in group.item" :key="item.id" class="record">
                         <span>{{tagString(item.tags)}}</span>
                         <span class="notes">{{item.notes}}</span>
-                        <span>¥</span>
+                        <span>¥{{item.amount}}</span>
                     </li>
                 </ol>
             </li>
         </ol>
-
     </Layout>
 
 </template>
@@ -43,17 +42,17 @@
         type = '-';
 
         tagString(x: Tag[]) {
-            let string='';
-            if(x.length===0){
-                return '无'
-            }else {
-                x.forEach(x=>{
-                    string=string+' '+x.name
+            let string = '';
+            if (x.length === 0) {
+                return '无';
+            } else {
+                x.forEach(x => {
+                    string = string + ' ' + x.name;
 
-                })
+                });
             }
             console.log(string);
-            return  string
+            return string;
         }
 
 
@@ -69,24 +68,39 @@
             const {RecordList} = this;
             const newList = clone(RecordList).filter(a => a.type === this.type)
                 .sort((a, b) => {
-                    return (dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
+                    return (dayjs(b.date).valueOf() - dayjs(a.date).valueOf());
                 });
-            const result: Result = [{
-                title: dayjs(newList[0].date).format('YYYY-MM-DD'),
-                item: [newList[0]]
-            }];
-            for (let i = 1; i < newList.length; i++) {
-                const current = newList[i];
-                const last = result[result.length - 1];
-                if (dayjs(current.date).isSame(dayjs(last.title), 'day')) {
-                    last.item.push(current);
-                } else {
-                    result.push({title: dayjs(current.date).format('YYYY-MM--DD'), item: [current]});
+            if(newList.length>0){
+                const result: Result = [{
+                    title: dayjs(newList[0].date).format('YYYY-MM-DD'),
+                    item: [newList[0]],
+                    total: 0
+                }];
+                for (let i = 1; i < newList.length; i++) {
+                    const current = newList[i];
+                    const last = result[result.length - 1];
+                    if (dayjs(current.date).isSame(dayjs(last.title), 'day')) {
+                        last.item.push(current);
+                    } else {
+                        result.push({
+                            title: dayjs(current.date).format('YYYY-MM--DD'),
+                            item: [current],
+                            total: current.amount
+                        });
+                    }
                 }
+                result.map(group => {
+                    group.total = group.item.reduce((sum, b) => {
+                        return sum + b.amount;
+                    }, 0);
+                });
+                return result
+
+            }else {
+                return []
             }
 
 
-            return result;
 
 
         }

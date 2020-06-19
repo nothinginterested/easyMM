@@ -1,5 +1,5 @@
 <template>
-    <svg class="icon" aria-hidden="true">
+    <svg class="icon " aria-hidden="true" :class="`${color}-wrapper`">
         <use :xlink:href="`#icon-${icon}`"></use>
     </svg>
 </template>
@@ -9,6 +9,9 @@
         name: 'Icon',
         props: {
             icon: {
+                type: String
+            },
+            color: {
                 type: String
             }
         }

@@ -4,6 +4,8 @@ import Money from '@/views/Money.vue';
 import Labels from '@/views/Labels.vue';
 import Statistics from '@/views/Statistics.vue';
 import EditLabels from '@/views/EditLabels.vue';
+import Login from '@/views/Login.vue';
+import Type from '@/components/Record.vue';
 
 Vue.use(VueRouter);
 
@@ -23,6 +25,13 @@ const routes: Array<RouteConfig> = [
     {
         path: '/labels/edit/:id',
         component: EditLabels
+    },
+    {
+        path: '/login',
+        component: Login
+    }, {
+        path: '/type',
+        component: Type
     },
     {
         path: '/',

@@ -1,12 +1,40 @@
 <template>
-    <Layout class-prefix="xxx">
+    <Layout class-prefix="xxx" @handleDate="changeMonthToggle" @handleTypes="changeTypesToggle" :Month="Month">
 
-        <number-pads :amount.sync="record.amount" @submit="saveRecord"></number-pads>
-        <types :select.sync="record.type"></types>
-        <form-item @update:value="onUpdateNotes" field-name="备注1" place-holder="在这里输入备注"></form-item>
-        <tags  @update:value="onUpdateTags"></tags>
-        {{record}}
-        {{RecordList}}
+        <div class="Record" @click="open">
+
+            <Icon icon="jilu" color="normal" class="icon"></Icon>
+
+        </div>
+        <Record v-if="RecordToggle" :RecordToggle.sync="RecordToggle" :data-income="dataIncome"
+                :data-expense="dataExpense"></Record>
+
+        <SelectMonth :value.sync="SelectMonth" v-if="MonthToggle" :MonthToggle.sync="MonthToggle">
+        </SelectMonth>
+        <Types :TypesToggle.sync="TypesToggle" :data-expense="dataExpense"
+               :data-income="dataIncome"
+
+        ></Types>
+        {{RecordListDay[0].item}}
+        <br>
+        <br>
+        {{RecordListDay[1]}}
+        <ul>
+            <li v-for="(group,index) in RecordListDay" :key="index">
+                <header>
+                    <section>
+                        <span> {{group.title }}</span>
+                        <span>  {{WeekList[ group.day]}}</span>
+                    </section>
+                    <section>
+
+                    </section>
+                </header>
+
+
+            </li>
+        </ul>
+
 
     </Layout>
 
@@ -17,28 +45,124 @@
     import Vue from 'vue';
 
     import NumberPads from '@/components/Money/numberPads.vue';
-    import Types from '@/components/Money/types.vue';
+    import Types from '@/components/Types.vue';
     import FormItem from '@/components/Money/FormItem.vue';
     import Tags from '@/components/Money/tags.vue';
     import {Component} from 'vue-property-decorator';
+    import Record from '@/components/Record.vue';
+    import Card from '@/components/Card.vue';
+    import {ALL_CATEGORIES, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES} from '@/lib/data';
+    import SelectMonth from '@/components/SelectMonth.vue';
+    import dayjs from 'dayjs';
+    import clone from '@/lib/clone';
 
 
     @Component({
         components: {
+            SelectMonth,
+            Record,
+            Card,
             Types, FormItem, Tags, NumberPads
         }
     })
     export default class extends Vue {
-        dataSource: string[] = ['衣', '食', '住', '行'];
+        RecordToggle = false; //这是控制记账页面的toggle
+        TypesToggle = false; //这是类型控制
+        MonthToggle = false; //这是月份控制
+        dataIncome = DEFAULT_INCOME_CATEGORIES;
+        dataExpense = DEFAULT_EXPENSE_CATEGORIES;
+        SelectMonth = dayjs().month(dayjs(new Date()).month());
+        WeekList = {
+            Sunday: '星期日',
+            Monday: '星期一',
+            Tuesday: '星期二',
+            Wednesday: '星期三',
+            Thursday: '星期四',
+            Friday: '星期五',
+            Saturday: '星期六'
 
+        };
 
-
-        get RecordList() {
+        get RecordList(): RecordItem[] {
             return this.$store.state.RecordList;
+        }
+
+
+        get RecordListMonth(): RecordItem[] {   //过滤所选月份
+            return this.RecordList.filter(item => {
+                return this.SelectMonth.month() === dayjs(item.date).month();
+
+            }).sort((a, b) => {
+                return dayjs(b.date).valueOf() - dayjs(a.date).valueOf();
+            });
+        }
+
+        get RecordListDay() {  //对每个月进行排序
+            const newList = clone(this.RecordListMonth);
+
+            if (newList.length > 0) {
+                const result: Result = [{
+                    day: dayjs(newList[0].date).format('dddd'),
+                    title: dayjs(newList[0].date).format('MM-DD'),
+                    item: [newList[0]],
+                    expense: 0,
+                    income: 0
+
+                }];
+                for (let i = 1; i < newList.length; i++) {
+                    const current = newList[i];
+                    const last = result[result.length - 1];
+                    if (dayjs(current.date).isSame(dayjs(last.item[0].date), 'day')) {
+                        last.item.push(current);
+                    } else {
+                        result.push({
+                            day: dayjs(current.date).format('dddd'),
+                            title: dayjs(current.date).format('MM-DD'),
+                            item: [current],
+                            income: 0,
+                            expense: 0
+                        });
+                    }
+                }
+                result.map(group => {
+                    group.income = group.item.reduce((sum, b) => {
+                        return b.type === '+' ? sum + b.amount : sum;
+                    }, 0);
+                });
+                result.map(group => {
+                    group.expense = group.item.reduce((sum, b) => {
+                        return b.type === '-' ? sum + b.amount : sum;
+                    }, 0);
+                });
+                return result;
+
+            } else {
+                return [];
+            }
+
+        }
+
+        changeMonthToggle() {
+            this.MonthToggle = true;
+        }
+
+        get Month() {
+            return dayjs(this.SelectMonth).format('YYYY年MM月');
         }
 
         created() {
             this.$store.commit('fetchRecords');
+            console.log(dayjs(this.RecordList[0].date).month());
+
+        }
+
+        open() {
+            this.RecordToggle = true;
+            console.log(this);
+        }
+
+        changeTypesToggle() {
+            this.TypesToggle = true;
         }
 
 
@@ -51,14 +175,18 @@
 
         onUpdateNotes(value: string) {
             this.record.notes = value;
+
         }
 
-        onUpdateTags(value: string[]) {
+        onUpdateTags(value: Tag[]) {
             this.record.tags = value;
         }
 
         saveRecord() {
             this.$store.commit('createRecord', this.record);
+            this.record.notes = '';
+            this.record.amount = 0;
+
 
         }
 
@@ -69,13 +197,10 @@
 
 <style lang="scss">
     .xxx-wrapper {
-        border: 1px solid red;
     }
 
     .xxx-content {
-        border: 1px solid red;
         display: flex;
-        flex-direction: column-reverse;
     }
 
 </style>
@@ -83,160 +208,85 @@
 <style scoped lang="scss">
     @import '~@/assets/_var.scss';
 
-    .xxx {
-        display: flex;
-        flex-direction: column-reverse;
+
+    .Record {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        bottom: 128px;
+        right: 32px;
+        border-radius: 50%;
+        box-shadow: 0 2px 24px -6px #606266;
+
+        > .icon {
+            border: 1px solid red;
+            position: relative;
+            width: 30px;
+            height: 30px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+    }
+
+    .Wrapper {
         border: 1px solid red;
+        background-color: #FAFAFA;
+
+        & > .single {
+            padding: 8px 0 8px 8px;
+            color: #909399;
+        }
     }
 
-
-    .numberPad {
-        .output {
-            font-size: 36px;
-            font-family: Consolas, monospace;
-            padding: 18px 16px;
-            text-align: right;
-            box-shadow: inset 0 -5px 5px -5px fade_out(black, 0.3),
-            inset 0 5px 5px -5px fade_out(black, 0.3);
-
-        }
-
-        .buttons {
-            @extend %x;
-
-            > button {
-                width: 25%;
-                height: 64px;
-                background: transparent;
-                border: none;
-
-                &.ok {
-                    height: 64*2px;
-                    float: right;
-                }
-
-                &.zero {
-                    width: 50%;
-                }
-
-                $bg: #f2f2f2;
-
-                &:nth-child(1) {
-                    background: $bg;
-                }
-
-                &:nth-child(2), &:nth-child(5) {
-                    background: darken($bg, 4%);
-                }
-
-                &:nth-child(3), &:nth-child(6), &:nth-child(9) {
-                    background: darken($bg, 4*2%);
-                }
-
-                &:nth-child(4), &:nth-child(7), &:nth-child(10) {
-                    background: darken($bg, 4*3%);
-                }
-
-                &:nth-child(8), &:nth-child(11), &:nth-child(13) {
-                    background: darken($bg, 4*4%);
-                }
-
-                &:nth-child(14) {
-                    background: darken($bg, 4*5%);
-                }
-
-                &:nth-child(12) {
-                    background: darken($bg, 4*6%);
-                }
-            }
-        }
-
-
-    }
-
-
-    .types {
-        font-size: 24px;
-        background: #c4c4c4;
+    .incomeWrapper {
+        display: flex;
         justify-content: center;
         align-items: center;
-        display: flex;
+        flex-wrap: wrap;
 
-        > li {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 64px;
-            width: 50%;
-            position: relative;
-
-            &.selected::after {
-                position: absolute;
-                left: 0;
-                bottom: 0;
-                width: 100%;
-                content: '';
-                height: 4px;
-                background: #333333;
-            }
-
+        & > .income {
+            background-color: white;
+            text-align: center;
+            font-size: 1.1em;
+            padding: 16px;
+            width: 33.3%;
+            border: 4px solid #FAFAFA;
+            border-radius: 6px;
         }
+
     }
 
-
-    .notes {
-        font-size: 14px;
-        background: #f5f5f5;
+    .expenseWrapper {
+        border: 1px solid red;
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
 
-        > .name {
-            padding: 0 16px;
+        & > .expense {
 
+
+            background-color: white;
+            text-align: center;
+            font-size: 1.1em;
+            padding: 16px;
+            width: 33.3%;
+            border: 4px solid #FAFAFA;
+            border-radius: 6px;
         }
-
-        input {
-            background: transparent;
-            border: none;
-            height: 64px;
-            flex-grow: 1;
-
-        }
-
 
     }
 
-    .tags {
+    .allTypes {
 
-        font-size: 14px;
+        background-color: white;
+        text-align: center;
+        font-size: 1.1em;
         padding: 16px;
-
-        > .current {
-            display: flex;
-
-            > li {
-                $h: 24px;
-                background: #d9d9d9;
-                border-radius: $h/2;
-                height: $h;
-                line-height: $h;
-                padding: 0 16px;
-                margin-right: 8px;
-            }
-        }
-
-        > .new {
-            padding-top: 16px;
-
-            button {
-                background: transparent;
-                border: none;
-                color: #999;
-                border-bottom: 1px solid;
-                padding: 0 4px;
-            }
-        }
-
+        width: 33.3%;
+        border: 4px solid #FAFAFA;
+        border-radius: 6px;
 
     }
 

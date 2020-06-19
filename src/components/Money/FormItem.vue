@@ -2,7 +2,7 @@
     <div>
         <label class="notes">
             <span class="name">{{this.fieldName}}</span>
-            <input type="text" :placeholder="placeHolder" @input="onValueChanged($event.target.value)"
+            <input type="text" :placeholder="placeHolder" @input="onValueChanged($event.target.value)" :value="value"
             >
         </label>
     </div>
@@ -30,9 +30,10 @@
 <style lang='scss' scoped>
     .notes {
         font-size: 14px;
-        background: #f5f5f5;
+        background: white;
         display: flex;
         align-items: center;
+        color: #576F96;
 
         > .name {
             padding: 0 16px;

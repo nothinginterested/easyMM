@@ -3,6 +3,8 @@ import Vuex from 'vuex';
 import {model} from '@/model/recordListmodel';
 import createId from '@/lib/idCreator';
 import router from '@/router';
+import {ALL_CATEGORIES} from '@/lib/data';
+import dayjs from 'dayjs';
 
 
 Vue.use(Vuex);
@@ -16,10 +18,12 @@ const store = new Vuex.Store({
     mutations: {
         fetchRecords(state) {
             state.RecordList = JSON.parse(window.localStorage.getItem('recordList') || '[]') as RecordItem[];
+
         },
         createRecord(state, record: RecordItem) {
+            console.log(record);
             const record2: RecordItem = model.clone(record);
-            record2.date = new Date().toISOString();
+            record2.date =new Date().toISOString();
             state.RecordList.push(record2);
 
             store.commit('saveRecord');
@@ -29,7 +33,8 @@ const store = new Vuex.Store({
             window.localStorage.setItem('recordList', JSON.stringify(state.RecordList));
         },
         fetchTags(state) {
-            state.TagList = JSON.parse(window.localStorage.getItem('tagList') || '[]');
+            state.TagList = ALL_CATEGORIES;
+
 
         },
         createTag(state, name: string) {

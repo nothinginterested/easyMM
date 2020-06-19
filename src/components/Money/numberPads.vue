@@ -1,6 +1,6 @@
 <template>
     <div class="numberPad">
-        <div class="output">{{output}}</div>
+        <!--        <div class="output">{{output}}</div>-->
         <div class="buttons">
             <button @click="storeOutput">1</button>
             <button @click="storeOutput">2</button>
@@ -13,7 +13,7 @@
             <button @click="storeOutput">7</button>
             <button @click="storeOutput">8</button>
             <button @click="storeOutput">9</button>
-            <button class="ok" @click="ok">ok</button>
+            <button class="ok " @click="ok" :class="{Income:select==='+',Outlay:select==='-'}">ok</button>
             <button class="zero" @click="storeOutput">0</button>
             <button @click="storeOutput">.</button>
         </div>
@@ -26,8 +26,13 @@
 
     @Component
     export default class extends Vue {
-        @Prop(Number) amount!: number;
-        output = this.amount.toString();
+        @Prop(String) amount!: string;
+        @Prop(String) select!: string;
+        output = this.amount;
+
+        mounted() {
+            console.log(this.output);
+        }
 
         storeOutput(event: MouseEvent) {
             const button = event.target as HTMLButtonElement;
@@ -42,16 +47,22 @@
                     return;
                 } else if ('123456789'.indexOf(input) >= 0) {
                     this.output = input;
+                    this.$emit('update:amount', (this.output));
+
 
                 }
                 if (input === '.') {
                     this.output += input;
+                    this.$emit('update:amount', (this.output));
+
                 }
             } else if (this.output.indexOf('.') >= 0 && input === '.') {
 
                 return;
             } else {
                 this.output += input;
+                this.$emit('update:amount', (this.output));
+
             }
 
 
@@ -63,11 +74,15 @@
 
         deleteOutput() {
             this.output = this.output.slice(0, -1);
+            this.$emit('update:amount', (this.output));
+
         }
 
         ok() {
-            this.$emit('update:amount',  parseFloat(this.output));
             this.$emit('submit');
+            this.clear();
+
+
         }
     }
 </script>
@@ -90,51 +105,30 @@
 
         .buttons {
             @extend %x;
+            background: #FAFAFA;
 
             > button {
                 width: 25%;
                 height: 64px;
-                background: transparent;
-                border: none;
+                background: white;
+                border-radius: 4px;
+                font-size: 1.3em;
+                border: 4px solid #FAFAFA;
 
                 &.ok {
                     height: 64*2px;
                     float: right;
+                    background: #40B475;
+                }
+                &.ok.Income{
+                    background: #F0B739;
                 }
 
                 &.zero {
                     width: 50%;
                 }
 
-                $bg: #f2f2f2;
 
-                &:nth-child(1) {
-                    background: $bg;
-                }
-
-                &:nth-child(2), &:nth-child(5) {
-                    background: darken($bg, 4%);
-                }
-
-                &:nth-child(3), &:nth-child(6), &:nth-child(9) {
-                    background: darken($bg, 4*2%);
-                }
-
-                &:nth-child(4), &:nth-child(7), &:nth-child(10) {
-                    background: darken($bg, 4*3%);
-                }
-
-                &:nth-child(8), &:nth-child(11), &:nth-child(13) {
-                    background: darken($bg, 4*4%);
-                }
-
-                &:nth-child(14) {
-                    background: darken($bg, 4*5%);
-                }
-
-                &:nth-child(12) {
-                    background: darken($bg, 4*6%);
-                }
             }
         }
 

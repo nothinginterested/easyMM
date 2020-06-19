@@ -1,5 +1,32 @@
 <template>
     <div class="navWrapper" :class="classPrefix&&`${classPrefix}-wrapper`">
+        <header class="header">
+            <p class="title">记账本</p>
+        </header>
+        <section class="Wrapper" @click.stop="handleTypes">
+            <section>
+                <button class="types">
+                    <span>全部类型</span>
+                    <span class="xxx"></span>
+                    <Icon icon="type"></Icon>
+                </button>
+            </section>
+            <section class="date-wrapper">
+                <button @click.stop="handleData" class="date">
+                    <span>
+                        {{Month}}
+
+                    </span>
+
+                </button>
+                <span style="margin-right: 12px;">
+                        总支出
+                    </span>
+                <span>
+                        总收入
+                    </span>
+            </section>
+        </section>
         <div class="content" :class="classPrefix&&`${classPrefix}-content`">
             <slot></slot>
 
@@ -10,10 +37,30 @@
 </template>
 
 <script lang='ts'>
-    export default {
-        name: 'Layout',
-        props: ['classPrefix']
-    };
+    import Vue from 'vue';
+    import {Component, Prop} from 'vue-property-decorator';
+
+    @Component
+    export default class extends Vue {
+        @Prop(String) Month: string | undefined;
+        @Prop({default: ''}) classPrefix: string | undefined;
+
+        handleData() {
+            this.$emit('handleDate');
+        }
+
+        handleTypes() {
+            this.$emit('handleTypes');
+        }
+
+        get dateCurrent() {
+            if (this.Month) {
+                return this.Month;
+            } else return '2020年06月';
+        }
+
+
+    }
 </script>
 
 <style lang='scss' scoped>
@@ -23,13 +70,59 @@
         display: flex;
         flex-direction: column;
 
+        & > .header {
+            background: #40B475;
+            padding: 52px 14px 16px;
+            color: #edf5ed;
+
+            > .title {
+                text-align: center;
+                font-size: 18px;
+            }
+
+        }
+
         & > .content {
             flex-grow: 1;
             overflow: auto;
         }
 
-        & > .nav {
+
+        & > .Wrapper {
+            background: #40B475;
+            border: 1px solid red;
+            display: inline-block;
+            padding: 0 14px;
+            color: #edf5ed;
+
+            & > section > .types {
+                background: #53BC82;
+                border-radius: 4px;
+                padding: 8px 8px;
+                color: #edf5ed;
+
+                & > .xxx {
+                    margin: 0 16px;
+                    border-right: 1px solid;
+                }
+            }
+
+            & > section.date-wrapper {
+                & > .date {
+                    padding: 8px 16px;
+                    background: none;
+                    color: #edf5ed;
+                    display: inline-flex;
+                    align-items: center;
+
+
+                }
+
+                border: 1px solid red;
+
+            }
         }
+
 
     }
 

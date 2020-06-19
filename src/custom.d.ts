@@ -4,12 +4,14 @@ type RecordItem = {
     type: string;
     amount: number;
     date?: string;
+    amountToString?: string;
 
 
 };
 type Tag = {
     id: number;
     name: string;
+    iconName?: string;
 }
 type RootState = {
     RecordList: RecordItem[];
@@ -18,6 +20,9 @@ type RootState = {
 }
 
 type Result = {
+    day: string;
     title: string;
+    expense: number;
+    income: number;
     item: RecordItem[];
 }[]
