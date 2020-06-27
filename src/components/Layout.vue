@@ -3,7 +3,7 @@
         <header class="header">
             <p class="title">记账本</p>
         </header>
-        <section class="Wrapper" @click.stop="handleTypes">
+        <section class="Wrapper" @click.stop="handleTypes" v-if="show">
             <section>
                 <button class="types">
                     <span>全部类型</span>
@@ -21,9 +21,13 @@
                 </button>
                 <span style="margin-right: 12px;">
                         总支出
+                    ¥ {{ExpenseTotal}}
+
                     </span>
+
                 <span>
                         总收入
+                    ¥ {{IncomeTotal}}
                     </span>
             </section>
         </section>
@@ -44,6 +48,9 @@
     export default class extends Vue {
         @Prop(String) Month: string | undefined;
         @Prop({default: ''}) classPrefix: string | undefined;
+        @Prop() show: boolean | undefined;
+        @Prop() IncomeTotal: number | undefined;
+        @Prop() ExpenseTotal: number | undefined;
 
         handleData() {
             this.$emit('handleDate');

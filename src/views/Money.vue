@@ -1,7 +1,8 @@
 <template>
     <Layout class-prefix="xxx" @handleDate="changeMonthToggle" @handleTypes="changeTypesToggle" :Month="Month"
-            style="background: #EDEDED">
-
+            style="background: #EDEDED" :show="true"
+            :ExpenseTotal="ExpenseTotal"
+    :IncomeTotal="IncomeTotal">
         <div class="Record" @click="open">
 
             <Icon icon="jilu" color="normal" class="icon"></Icon>
@@ -39,7 +40,7 @@
                                                     <Icon icon=""></Icon>
                         </span>
                         <div class="record-content">
-                            <div>{{item.tags[0].name}}</div>
+                            <div>{{item.tags[0].name||''}}</div>
                             <div class="record-content-details">
                                 <span>{{getTime(item)}}</span>
                             </div>
@@ -76,6 +77,7 @@
     import SelectMonth from '@/components/SelectMonth.vue';
     import dayjs from 'dayjs';
     import clone from '@/lib/clone';
+    import {number} from 'echarts/src/export';
 
 
     @Component({
@@ -103,6 +105,20 @@
             Saturday: '星期六'
 
         };
+
+        get IncomeTotal() {
+            const xxx: number = this.RecordListDay.reduce((sum, b) => {
+                return sum + b.income;
+            }, 0);
+            return xxx;
+        }
+
+        get ExpenseTotal(){
+            const xxx: number = this.RecordListDay.reduce((sum, b) => {
+                return sum + b.expense;
+            }, 0);
+            return xxx;
+        }
 
         get RecordList(): RecordItem[] {
             return this.$store.state.RecordList;
@@ -173,13 +189,11 @@
 
         created() {
             this.$store.commit('fetchRecords');
-            console.log(dayjs(this.RecordList[0].date).month());
 
         }
 
         open() {
             this.RecordToggle = true;
-            console.log(this);
         }
 
         changeTypesToggle() {
@@ -195,6 +209,7 @@
             tags: [],
             type: '-',
             amount: 0,
+            id: 0
         };
 
         onUpdateNotes(value: string) {

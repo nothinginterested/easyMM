@@ -14,6 +14,7 @@
 
       }
     },
+
     created() {
       console.log(window.innerHeight);
       this.height = window.innerHeight * 0.1;

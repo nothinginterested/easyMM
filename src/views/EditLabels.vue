@@ -11,7 +11,7 @@
                         <Icon></Icon>
                     </span>
                     <span style="margin-left: 8px">
-                        {{Record.tags[0].name}}
+                        {{''}}
                     </span>
                 </section>
                 <h3>{{Record.type==='+'? '+'+Record.amount:'-'+Record.amount}}</h3>
@@ -55,7 +55,7 @@
         Record: RecordItem = {
             notes: '',
             tags: [],
-            type: '',
+            type: '+',
             amount: 0,
             date: '',
             amountToString: '',
@@ -80,7 +80,10 @@
                 return item.id.toString() === id;
 
             });
-            this.Record = i[0];
+            if (i.length > 0) {
+                this.Record = i[0];
+
+            }
             console.log(id);
             console.log(i);
 

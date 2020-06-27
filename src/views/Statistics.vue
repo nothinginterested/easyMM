@@ -1,7 +1,6 @@
 <template>
     <Layout>
 
-        <Tabs :data-source="dataSource" :select.sync="type" class-prefix="type"></Tabs>
         <ol>
             <li v-for="(group,index) in GroupList" :key="index" >
                 <h3 class="title">{{group.title}}<span>{{group.total}}</span></h3>
