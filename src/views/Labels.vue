@@ -15,11 +15,10 @@
 
         <section class="analysis-wrapper">
             <section>
-                {{SelectTypeDay}}
                 <SelectType title="每日对比" :type.sync="SelectTypeDay"></SelectType>
 
                 <div class="day-wrapper" style="margin: 0 -24px;overflow-x: auto;background: white;color: #eee">
-                    <v-chart :options="dayChartOptions" style="height:300px; flex: none"></v-chart>
+                    <v-chart :options="dayChartOptions" style="height:300px; flex: none" ref="day"></v-chart>
 
                 </div>
             </section>
@@ -47,6 +46,10 @@
     import Button from '@/components/Button.vue';
     import SelectType from '@/components/SelectType.vue';
 
+    type map = {
+        '+': TRecordType;
+        '-': TRecordType;
+    }
     @Component({
         components: {
             SelectType,
@@ -56,12 +59,15 @@
         }
 
     })
+
     export default class Labels extends TagHelper {
         SelectMonth = dayjs().month(dayjs(new Date()).month());
         MonthToggle = false;
-        SelectTypeDay = '+';//每日对比 类型
-
-
+        SelectTypeDay: '-' | '+' = '+';//每日对比 类型
+        map: map = {
+            '-': 'expense',
+            '+': 'income'
+        };
 
 
         get xDayData() {
@@ -69,11 +75,11 @@
         }
 
         get yDayData() {
-            return this.getYData(this.xDayData, this.RecordListDay, 'expense');
+            return this.getYData(this.xDayData, this.RecordListDay, this.map[this.SelectTypeDay]);
         }
 
         get dayChartOptions() {
-            return barChart(this.xDayData, this.yDayData, 'expense', '号');
+            return barChart(this.xDayData, this.yDayData, this.map[this.SelectTypeDay], '号');
         }
 
         getYData(days: number[], RecordListsDay: Result, type: TRecordType) {
@@ -94,8 +100,12 @@
         }
 
         mounted() {
-            const x = this.getYData(this.xDayData, this.RecordListDay, 'expense');
-            console.log(typeof this.dayChartOptions);
+            console.log(this.$refs.day.dispatchAction);
+            this.$refs.day.dispatchAction({
+                    type: 'showTip',
+                    dataIndex: 20
+                }
+            );
         }
 
         handleMonth() {
