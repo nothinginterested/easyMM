@@ -17,8 +17,8 @@
             <section>
                 <SelectType title="每日对比" :type.sync="SelectTypeDay"></SelectType>
 
-                <div class="day-wrapper" style="margin: 0 -24px;overflow-x: auto;background: white;color: #eee">
-                    <v-chart :options="dayChartOptions" style="height:300px; flex: none" ref="day"></v-chart>
+                <div class="day-wrapper" style="margin: 0 -24px;overflow-x: auto;background: white;color: #eee" ref="day">
+                    <v-chart :options="dayChartOptions" style="height:300px; flex: none" ></v-chart>
 
                 </div>
             </section>
@@ -69,6 +69,10 @@
             '+': 'income'
         };
 
+        mounted() {
+            console.log((this.$refs.day as HTMLCanvasElement).width);
+            console.log((this.$refs.day as HTMLDivElement).scrollLeft=(this.$refs.day as HTMLCanvasElement).scrollWidth);
+        }
 
         get xDayData() {
             return getDaysInMonth(this.SelectMonth);
@@ -97,14 +101,6 @@
 
         }
 
-        mounted() {
-            console.log(this.$refs.day.dispatchAction);
-            this.$refs.day.dispatchAction({
-                    type: 'showTip',
-                    dataIndex: 20
-                }
-            );
-        }
 
         handleMonth() {
             this.MonthToggle = true;
