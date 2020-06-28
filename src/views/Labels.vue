@@ -11,8 +11,26 @@
             <p class="ExpenseTotal"><span>¥</span> <span class="money">{{ExpenseTotal}}</span></p>
             <p class="IncomeTotal">共收入 ¥ {{IncomeTotal}}</p>
         </section>
+
+
+        <section class="analysis-wrapper">
+            <section>
+                {{SelectTypeDay}}
+                <SelectType title="每日对比" :type.sync="SelectTypeDay"></SelectType>
+
+                <div class="day-wrapper" style="margin: 0 -24px;overflow-x: auto;background: white;color: #eee">
+                    <v-chart :options="dayChartOptions" style="height:300px; flex: none"></v-chart>
+
+                </div>
+            </section>
+            <div style="border-bottom: 1px solid;margin: 24px 0;background: white;border-color: #eee"></div>
+
+        </section>
+
+
         <SelectMonth :value.sync="SelectMonth" v-if="MonthToggle" :MonthToggle.sync="MonthToggle">
         </SelectMonth>
+
 
     </Layout>
 </template>
@@ -23,15 +41,62 @@
     import dayjs from 'dayjs';
     import clone from '@/lib/clone';
     import SelectMonth from '@/components/SelectMonth.vue';
+    import VEcharts from '@/components/V-Echarts.vue';
+    import {getDaysInMonth} from '@/lib/date';
+    import {barChart} from '@/lib/chart';
+    import Button from '@/components/Button.vue';
+    import SelectType from '@/components/SelectType.vue';
 
     @Component({
         components: {
+            SelectType,
+            Button,
+            VEcharts,
             SelectMonth
         }
+
     })
     export default class Labels extends TagHelper {
         SelectMonth = dayjs().month(dayjs(new Date()).month());
         MonthToggle = false;
+        SelectTypeDay = '+';//每日对比 类型
+
+
+
+
+        get xDayData() {
+            return getDaysInMonth(this.SelectMonth);
+        }
+
+        get yDayData() {
+            return this.getYData(this.xDayData, this.RecordListDay, 'expense');
+        }
+
+        get dayChartOptions() {
+            return barChart(this.xDayData, this.yDayData, 'expense', '号');
+        }
+
+        getYData(days: number[], RecordListsDay: Result, type: TRecordType) {
+            // console.log(days[26] === dayjs(RecordListsDay[0].title).get('date'));
+            // console.log(dayjs(RecordListsDay[0].title).get('date'));
+            return days.map(item => {
+                const record = RecordListsDay.find(r => dayjs(r.title).get('date') === item);
+                if (record && type === 'income') {
+                    return record.income;
+                } else if (record && type === 'expense') {
+                    return record.expense;
+                } else {
+                    return 0.00;
+                }
+
+            });
+
+        }
+
+        mounted() {
+            const x = this.getYData(this.xDayData, this.RecordListDay, 'expense');
+            console.log(typeof this.dayChartOptions);
+        }
 
         handleMonth() {
             this.MonthToggle = true;
@@ -122,6 +187,10 @@
 </script>
 
 <style lang='scss' scoped>
+    ::-webkit-scrollbar {
+        display: none
+    }
+
     .summary-wrapper {
         padding: 32px 0;
         text-align: center;
@@ -171,5 +240,23 @@
             color: #909399;
 
         }
+
+
+    }
+
+
+    .day-wrapper {
+        width: 375px;
+        height: 300px;
+        padding: 0px;
+        margin: 0px;
+        border-width: 0px;
+    }
+
+
+    .analysis-wrapper {
+        margin-top: 8px;
+        padding: 24px;
+        background: white;
     }
 </style>

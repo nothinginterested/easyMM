@@ -1,3 +1,4 @@
+
 type RecordItem = {
     notes: string;
     tags: Tag[];
@@ -27,3 +28,6 @@ type Result = {
     income: number;
     item: RecordItem[];
 }[]
+
+
+type TRecordType='income'| 'expense'
