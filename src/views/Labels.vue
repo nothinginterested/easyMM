@@ -83,8 +83,6 @@
         }
 
         getYData(days: number[], RecordListsDay: Result, type: TRecordType) {
-            // console.log(days[26] === dayjs(RecordListsDay[0].title).get('date'));
-            // console.log(dayjs(RecordListsDay[0].title).get('date'));
             return days.map(item => {
                 const record = RecordListsDay.find(r => dayjs(r.title).get('date') === item);
                 if (record && type === 'income') {
